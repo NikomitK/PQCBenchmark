@@ -20,7 +20,7 @@ fun doBenchmark(securityLevel: Int = 1, strings: Array<String> = arrayOf("Hello 
 
 
     for (algorithm in algorithms) {
-        val signature = SignatureUtil.generateSignature(algorithm, securityLevel)
+        val signature = JSignatureUtil.generateSignature(algorithm, securityLevel)
         val time = benchAlgorithm(signature, strings)
         println("$algorithm total time: $time")
     }
