@@ -1,21 +1,43 @@
 package net.nikomitk.pqc.benchmark
 
+import kotlinx.cli.ArgParser
+import kotlinx.cli.ArgType
+import kotlinx.cli.default
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider
 import java.security.Security
 import java.security.Signature
+import kotlin.random.Random
 import kotlin.time.Duration
 import kotlin.time.measureTime
 
-fun main() {
+fun main(args: Array<String>) {
+    val parser = ArgParser("benchmark")
+    val repetitions by parser.option(
+        ArgType.Int,
+        shortName = "r",
+        description = "Number of test repetitions"
+    ).default(50)
+
+    val securityLevel by parser.option(
+        type = ArgType.Choice<SecurityLevel>(),
+        shortName = "s",
+        description = "Security level of the signature"
+    ).default(SecurityLevel.LOW)
+
+    parser.parse(args)
+
+
     Security.addProvider(BouncyCastleProvider())
     Security.addProvider(BouncyCastlePQCProvider())
-    val strings = arrayOf<String>("Hello World", "Test123", "SLH-DSA ist cooler als ML-DSA", "SigniereMich")
-    doBenchmark(securityLevel = 1, strings = strings)
-
+    val strings = arrayListOf<ByteArray>()
+    repeat(repetitions, {
+        strings.add(Random.nextBytes(10))
+    })
+    doBenchmark(securityLevel.value, strings)
 }
 
-fun doBenchmark(securityLevel: Int = 1, strings: Array<String> = arrayOf("Hello World")) {
+fun doBenchmark(securityLevel: Int = 1, strings: ArrayList<ByteArray>) {
     val algorithms = arrayOf("ECDSA", "RSA", "MLDSA", "SLHDSA", "DILITHIUM", "SPHINCSPlus")
 
 
@@ -26,11 +48,11 @@ fun doBenchmark(securityLevel: Int = 1, strings: Array<String> = arrayOf("Hello 
     }
 }
 
-fun benchAlgorithm(signature: Signature, strings: Array<String>): Duration {
+fun benchAlgorithm(signature: Signature, strings: ArrayList<ByteArray>): Duration {
     var totalTime = Duration.ZERO
     for (s in strings) {
-        val message = s.toByteArray()
-        signature.update(message, 0, message.size)
+
+        signature.update(s, 0, s.size)
         totalTime += measureTime { signature.sign() }
     }
     return totalTime
