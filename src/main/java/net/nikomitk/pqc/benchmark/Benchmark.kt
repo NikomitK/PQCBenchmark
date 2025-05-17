@@ -10,25 +10,20 @@ import kotlin.time.measureTime
 fun main() {
     Security.addProvider(BouncyCastleProvider())
     Security.addProvider(BouncyCastlePQCProvider())
-    doBenchmark()
-//    val strings = arrayOf<String>("Hello World", "Test123", "SLH-DSA ist cooler als ML-DSA", "SigniereMich")
+    val strings = arrayOf<String>("Hello World", "Test123", "SLH-DSA ist cooler als ML-DSA", "SigniereMich")
+    doBenchmark(securityLevel = 1, strings = strings)
 
 }
 
 fun doBenchmark(securityLevel: Int = 1, strings: Array<String> = arrayOf("Hello World")) {
-    val ecdsaSignature = SignatureUtil.createECDSASignature()
-    val rsaSignature = SignatureUtil.createRSASignature()
-    val mldsaSignature = SignatureUtil.createMLDSASignature()
-    val slhdsaSignature = SignatureUtil.createSLHDSASignature()
+    val algorithms = arrayOf("ECDSA", "RSA", "MLDSA", "SLHDSA", "DILITHIUM", "SPHINCSPlus")
 
-    val ecdsaTime = benchAlgorithm(ecdsaSignature, strings)
-    val rsaTime = benchAlgorithm(rsaSignature, strings)
-    val mldsaTime = benchAlgorithm(mldsaSignature, strings)
-    val slhdsaTime = benchAlgorithm(slhdsaSignature, strings)
-    println("ECDSA total time: $ecdsaTime")
-    println("RSA total time: $rsaTime")
-    println("MLDSA total time: $mldsaTime")
-    println("SLHDSA total time: $slhdsaTime")
+
+    for (algorithm in algorithms) {
+        val signature = SignatureUtil.generateSignature(algorithm, securityLevel)
+        val time = benchAlgorithm(signature, strings)
+        println("$algorithm total time: $time")
+    }
 }
 
 fun benchAlgorithm(signature: Signature, strings: Array<String>): Duration {
