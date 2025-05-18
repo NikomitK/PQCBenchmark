@@ -3,13 +3,19 @@ package net.nikomitk.pqc.benchmark
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import kotlinx.cli.default
+import kotlinx.cli.multiple
+import org.apache.commons.csv.CSVFormat
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider
+import java.io.PrintWriter
+import java.io.Writer
 import java.security.Security
 import java.security.Signature
 import kotlin.random.Random
 import kotlin.time.Duration
 import kotlin.time.measureTime
+
+val results = ArrayList<Result>()
 
 fun main(args: Array<String>) {
     val parser = ArgParser("benchmark")
@@ -25,7 +31,15 @@ fun main(args: Array<String>) {
         description = "Security level of the signature"
     ).default(SecurityLevel.LOW)
 
+    val algorithms by parser.option(
+        type = ArgType.Choice<Algorithm>(),
+        shortName = "a",
+        description = "Algorithms to benchmark"
+    ).multiple().default(Algorithm.entries)
+
     parser.parse(args)
+
+    println("Starting benchmark with $repetitions repetitions and security level $securityLevel. \nAlgorithms: $algorithms")
 
 
     Security.addProvider(BouncyCastleProvider())
@@ -34,17 +48,28 @@ fun main(args: Array<String>) {
     repeat(repetitions, {
         strings.add(Random.nextBytes(10))
     })
-    doBenchmark(securityLevel.value, strings)
+    if (securityLevel == SecurityLevel.ALL) {
+        for (level in SecurityLevel.entries.dropLast(1)) {
+            doBenchmark(level, strings, algorithms)
+        }
+    } else {
+        doBenchmark(securityLevel, strings, algorithms)
+    }
+
+    PrintWriter(System.out).writeCsv(results)
 }
 
-fun doBenchmark(securityLevel: Int = 1, strings: ArrayList<ByteArray>) {
-    val algorithms = arrayOf("ECDSA", "RSA", "MLDSA", "SLHDSA", "DILITHIUM", "SPHINCSPlus")
-
+fun doBenchmark(
+    securityLevel: SecurityLevel = SecurityLevel.LOW,
+    strings: ArrayList<ByteArray>,
+    algorithms: List<Algorithm>
+) {
 
     for (algorithm in algorithms) {
         val signature = SignatureUtil.generateSignature(algorithm, securityLevel)
         val time = benchAlgorithm(signature, strings)
         println("$algorithm total time: $time")
+        results.add(Result(algorithm.value, securityLevel, time))
     }
 }
 
@@ -56,4 +81,13 @@ fun benchAlgorithm(signature: Signature, strings: ArrayList<ByteArray>): Duratio
         totalTime += measureTime { signature.sign() }
     }
     return totalTime
+}
+
+fun Writer.writeCsv(results: List<Result>) {
+    CSVFormat.DEFAULT.print(this).apply {
+        printRecord("Algorithm", "Security Level (bits)", "Time (µs")
+        for (result in results) {
+            printRecord(result.algorithm, result.securityLevel.value, result.time.inWholeMicroseconds)
+        }
+    }.flush()
 }
