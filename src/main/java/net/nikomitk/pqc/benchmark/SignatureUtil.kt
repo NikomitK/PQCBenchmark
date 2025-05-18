@@ -23,7 +23,6 @@ object SignatureUtil {
             SecurityLevel.LOW -> ECNamedCurveGenParameterSpec("P-256")
             SecurityLevel.MEDIUM -> ECNamedCurveGenParameterSpec("P-384")
             SecurityLevel.HIGH -> ECNamedCurveGenParameterSpec("P-521")
-            else -> throw IllegalArgumentException("Invalid security level: $securityLevel")
         }
         val ecdsa = createGenericSignature("ECDSA", paramSpec)
         return ecdsa
@@ -34,7 +33,6 @@ object SignatureUtil {
             SecurityLevel.LOW -> RSAKeyGenParameterSpec(3072, RSAKeyGenParameterSpec.F4)
             SecurityLevel.MEDIUM -> RSAKeyGenParameterSpec(7680, RSAKeyGenParameterSpec.F4)
             SecurityLevel.HIGH -> RSAKeyGenParameterSpec(15360, RSAKeyGenParameterSpec.F4)
-            else -> throw IllegalArgumentException("Invalid security level: $securityLevel")
         }
         val rsa = createGenericSignature("RSA", paramSpec)
         return rsa
@@ -45,7 +43,6 @@ object SignatureUtil {
             SecurityLevel.LOW -> MLDSAParameterSpec.ml_dsa_44
             SecurityLevel.MEDIUM -> MLDSAParameterSpec.ml_dsa_65
             SecurityLevel.HIGH -> MLDSAParameterSpec.ml_dsa_87
-            else -> throw IllegalArgumentException("Invalid security level: $securityLevel")
         }
         val mldsa = createGenericSignature("MLDSA", paramSpec)
         return mldsa
@@ -56,7 +53,6 @@ object SignatureUtil {
             SecurityLevel.LOW -> DilithiumParameterSpec.dilithium2
             SecurityLevel.MEDIUM -> DilithiumParameterSpec.dilithium3
             SecurityLevel.HIGH -> DilithiumParameterSpec.dilithium5
-            else -> throw IllegalArgumentException("Invalid security level: $securityLevel")
         }
         val dilithium = createGenericSignature("DILITHIUM", paramSpec)
         return dilithium
@@ -67,7 +63,6 @@ object SignatureUtil {
             SecurityLevel.LOW -> SPHINCSPlusParameterSpec.shake_128f
             SecurityLevel.MEDIUM -> SPHINCSPlusParameterSpec.shake_192f
             SecurityLevel.HIGH -> SPHINCSPlusParameterSpec.shake_256f
-            else -> throw IllegalArgumentException("Invalid security level: $securityLevel")
         }
         val sphincsPlus = createGenericSignature("SPHINCSPlus", paramSpec)
         return sphincsPlus
@@ -78,7 +73,6 @@ object SignatureUtil {
             SecurityLevel.LOW -> SPHINCSPlusParameterSpec.shake_128s
             SecurityLevel.MEDIUM -> SPHINCSPlusParameterSpec.shake_192s
             SecurityLevel.HIGH -> SPHINCSPlusParameterSpec.shake_256s
-            else -> throw IllegalArgumentException("Invalid security level: $securityLevel")
         }
         val sphincsPlus = createGenericSignature("SPHINCSPlus", paramSpec)
         return sphincsPlus
