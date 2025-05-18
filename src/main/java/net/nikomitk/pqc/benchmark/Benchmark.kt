@@ -61,7 +61,7 @@ fun doBenchmark(
 ) {
 
     for (algorithm in algorithms) {
-        val signature = SignatureUtil.generateSignature(algorithm, securityLevel)
+        val signature = JSignatureUtil.generateSignature(algorithm, securityLevel)
         val time = benchAlgorithm(signature, strings)
         println("$algorithm-${securityLevel.value} total time: $time")
         results.add(Result(algorithm.value, securityLevel, time))
@@ -80,7 +80,7 @@ fun benchAlgorithm(signature: Signature, strings: ArrayList<ByteArray>): Duratio
 
 fun Writer.writeCsv(results: List<Result>) {
     CSVFormat.DEFAULT.print(this).apply {
-        printRecord("Algorithm", "Security Level (bits)", "Time (µs")
+        printRecord("Algorithm", "Security Level (bits)", "Time (µs)")
         for (result in results) {
             printRecord(result.algorithm, result.securityLevel.value, result.time.inWholeMicroseconds)
         }
