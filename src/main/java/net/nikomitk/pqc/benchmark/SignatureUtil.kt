@@ -60,9 +60,9 @@ object SignatureUtil {
 
     fun createSPHINCSPlusFastSignature(securityLevel: SecurityLevel = SecurityLevel.LOW): Signature {
         val paramSpec = when(securityLevel) {
-            SecurityLevel.LOW -> SPHINCSPlusParameterSpec.shake_128f
-            SecurityLevel.MEDIUM -> SPHINCSPlusParameterSpec.shake_192f
-            SecurityLevel.HIGH -> SPHINCSPlusParameterSpec.shake_256f
+            SecurityLevel.LOW -> SPHINCSPlusParameterSpec.sha2_128f
+            SecurityLevel.MEDIUM -> SPHINCSPlusParameterSpec.sha2_192f
+            SecurityLevel.HIGH -> SPHINCSPlusParameterSpec.sha2_256f
         }
         val sphincsPlus = createGenericSignature("SPHINCSPlus", paramSpec)
         return sphincsPlus
@@ -70,9 +70,9 @@ object SignatureUtil {
 
     fun createSPHINCSPlusSimpleSignature(securityLevel: SecurityLevel = SecurityLevel.LOW): Signature {
         val paramSpec = when(securityLevel) {
-            SecurityLevel.LOW -> SPHINCSPlusParameterSpec.shake_128s
-            SecurityLevel.MEDIUM -> SPHINCSPlusParameterSpec.shake_192s
-            SecurityLevel.HIGH -> SPHINCSPlusParameterSpec.shake_256s
+            SecurityLevel.LOW -> SPHINCSPlusParameterSpec.sha2_128s
+            SecurityLevel.MEDIUM -> SPHINCSPlusParameterSpec.sha2_192s
+            SecurityLevel.HIGH -> SPHINCSPlusParameterSpec.sha2_256s
         }
         val sphincsPlus = createGenericSignature("SPHINCSPlus", paramSpec)
         return sphincsPlus
