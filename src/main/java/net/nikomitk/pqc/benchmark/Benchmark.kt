@@ -29,7 +29,7 @@ fun main(args: Array<String>) {
         type = ArgType.Choice<SecurityLevel>(),
         shortName = "s",
         description = "Security level of the signature"
-    ).default(SecurityLevel.LOW)
+    ).multiple().default(SecurityLevel.entries)
 
     val algorithms by parser.option(
         type = ArgType.Choice<Algorithm>(),
@@ -48,14 +48,9 @@ fun main(args: Array<String>) {
     repeat(repetitions, {
         strings.add(Random.nextBytes(10))
     })
-    if (securityLevel == SecurityLevel.ALL) {
-        for (level in SecurityLevel.entries.dropLast(1)) {
-            doBenchmark(level, strings, algorithms)
-        }
-    } else {
-        doBenchmark(securityLevel, strings, algorithms)
+    for (level in securityLevel) {
+        doBenchmark(level, strings, algorithms)
     }
-
     PrintWriter(System.out).writeCsv(results)
 }
 
@@ -68,7 +63,7 @@ fun doBenchmark(
     for (algorithm in algorithms) {
         val signature = SignatureUtil.generateSignature(algorithm, securityLevel)
         val time = benchAlgorithm(signature, strings)
-        println("$algorithm total time: $time")
+        println("$algorithm-${securityLevel.value} total time: $time")
         results.add(Result(algorithm.value, securityLevel, time))
     }
 }
