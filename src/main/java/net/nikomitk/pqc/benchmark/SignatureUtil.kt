@@ -7,7 +7,6 @@ import java.security.KeyPairGenerator
 import java.security.Signature
 import java.security.spec.AlgorithmParameterSpec
 import java.security.spec.RSAKeyGenParameterSpec
-import kotlin.time.Duration
 
 object SignatureUtil {
 
@@ -15,8 +14,8 @@ object SignatureUtil {
     ECDSA("ECDSA"),
     RSA("RSA"),
     DILITHIUM("DILITHIUM"),
-    SPHINCSPlusFast("SPHINCSPlus-f"),
-    SPHINCSPlusSimple("SPHINCSPlus-s");
+    SPHINCSPlusFast("SPHINCS+-fast"),
+    SPHINCSPlusSimple("SPHINCS+-simple");
   }
 
   enum class SecurityLevel(val value: Int) {
@@ -24,8 +23,6 @@ object SignatureUtil {
     MEDIUM(192),
     HIGH(256),
   }
-
-  data class Result(val algorithm: String, val securityLevel: SecurityLevel, val time: Duration)
 
   fun generateSignature(algorithm: Algorithm, securityLevel: SecurityLevel = SecurityLevel.LOW): Signature =
     when (algorithm) {

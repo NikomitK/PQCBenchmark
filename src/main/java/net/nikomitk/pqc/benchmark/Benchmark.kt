@@ -8,8 +8,6 @@ import kotlin.random.Random
 import kotlin.time.Duration
 import kotlin.time.measureTime
 
-val results = ArrayList<SignatureUtil.Result>()
-
 fun main() {
   // Register Bouncy Castle providers
   Security.addProvider(BouncyCastleProvider())
@@ -42,12 +40,13 @@ fun doBenchmark(
   strings: ArrayList<ByteArray>,
   algorithms: List<SignatureUtil.Algorithm>
 ) {
+  println(String.format("%15s, %15s, %13s", "Algorithm", "Security Level", "Time"))
 
   for (algorithm in algorithms) {
     val signature = SignatureUtil.generateSignature(algorithm, securityLevel)
     val time = benchAlgorithm(signature, strings)
-    println("$algorithm, ${securityLevel.value}-bits, total time: $time")
-    results.add(SignatureUtil.Result(algorithm.value, securityLevel, time))
+    val output = String.format("%15s, %10d-bits, %13s", algorithm.value, securityLevel.value, time)
+    println(output)
   }
 }
 
